@@ -90,15 +90,32 @@ describe('Test Home', () => {
     expect(screen.queryByTestId(/category-item/i)).not.toBeInTheDocument();
   });
 
-  //Copied "Test Render"
-  test('Test Integration Render', async () => {
-    //Deleted the mock calls.  There is no Arrange for this test since this will access the shared servers.
+  test('Test Categories API Render', async () => {
+    //Arrange: Setup the mock API so the unit test stays deterministic.
+    const mockGet = jest.spyOn(axios, 'get');
+    mockGet.mockResolvedValue({
+      data: {
+        status: 'success',
+        data: [
+          {
+            id: 1,
+            name: 'Handhelds',
+            description: "So big, you don't need thumbs.",
+          },
+          {
+            id: 2,
+            name: 'Appeteasers',
+            description: 'Tease the hangry hippo, he get hangrier',
+          },
+        ],
+      },
+    });
+
     //Act: Call the Home page
     render(<Home />);
+
     //Assert: Check the values in the rendered Home page.
-    //There should be 2 categories as defined in the mock response above
     expect(await screen.findAllByTestId(/category-item/i)).toHaveLength(2);
-    //The word Appeateasers should be in there as defined in the mock response above.
     expect(await screen.findByText('Appeteasers')).toBeInTheDocument();
   });
 });
